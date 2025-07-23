@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<!-- تم تعديل السمة lang لتتغير ديناميكيا -->
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- ======================= PWA & STYLESHEETS ======================= -->
+  <!-- 1. لون واجهة التطبيق -->
+  <meta name="theme-color" content="#007aff"/>
+  
+  <!-- 2. ربط ملف Manifest الخارجي -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- 3. أيقونة التطبيق لأجهزة Apple -->
+  <link rel="apple-touch-icon" href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgPprCWU972pY69r6BK7dsaLAwRPSi_0AfSeFHQVwK8zZNj3mJmGEi6uNARys9D7ygnVEye2OQU2wFA75aWnGJwusrzxFJ-CyVMqUvXchNQxGodf5MviBMOSaRovigoIGasMo8dC_CFEquxZVOVfozliKWgO2Z2GQdK0w09vH9HMjbN17bmZ7iVf5MzbcqW/s192/1000163283.jpg">
+  
+  <title data-translate-key="pageTitle">نظام حضور العمال السحابي - iOS Style</title>
+  
+  <!-- 4. تحميل المكتبات الخارجية وملف التنسيق الخاص بنا -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+
+</head>
+<body>
+  
+  <!-- شريط التنقل -->
+  <nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container">
+      <a class="navbar-brand" href="#" data-translate-key="brandTitle">نظام حضور العمال</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNavbar">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNavbar">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item"><a class="nav-link" href="#" id="navHome" data-translate-key="navHome">الرئيسية</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" id="navWorkers" data-translate-key="navWorkers">قائمة العمال</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" id="navDashboard" data-translate-key="navDashboard">لوحة المعلومات</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" id="navActivity" data-translate-key="navActivity">سجل النشاط</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" id="navShifts" data-translate-key="navShifts">جدول المناوبات</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" id="navFingerprintAttendance" data-translate-key="navFingerprintAttendance">تسجيل الحضور بالبصمة</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" id="navSettings" data-translate-key="navSettings">إعدادات</a></li>
+          <li class="nav-item"><a class="nav-link" href="#" id="navHelp" data-translate-key="navHelp">مساعدة</a></li>
+        </ul>
+        <div class="dropdown me-3">
+            <button class="btn btn-ios-outline dropdown-toggle" type="button" id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fas fa-globe"></i> <span data-translate-key="language">اللغة</span>
+            </button>
+            <ul class="dropdown-menu" aria-labelledby="languageDropdown">
+                <li><a class="dropdown-item" href="#" onclick="setLanguage('ar')">العربية</a></li>
+                <li><a class="dropdown-item" href="#" onclick="setLanguage('en')">English</a></li>
+                <li><a class="dropdown-item" href="#" onclick="setLanguage('fr')">Français</a></li>
+            </ul>
+        </div>
+        <span id="userEmail" class="text-dark me-3"></span>
+        <button id="logoutBtn" class="btn btn-ios hidden"><i class="fas fa-sign-out-alt"></i> <span data-translate-key="logoutBtn">تسجيل الخروج</span></button>
+      </div>
+    </div>
+  </nav>
+  
+  <!-- المحتوى الرئيسي -->
+  <div class="container my-4">
+    <div id="loginSection" class="text-center">
+      <div class="card">
+        <div class="card-body">
+          <h3 data-translate-key="loginTitle">تسجيل الدخول</h3>
+          <p class="text-muted" data-translate-key="loginSubtitle">أدخل بريدك الإلكتروني وكلمة المرور لتسجيل الدخول.</p>
+          <input type="email" id="emailInput" class="form-control mb-2" data-translate-key="emailPlaceholder" placeholder="البريد الإلكتروني" required>
+          <input type="password" id="passwordInput" class="form-control mb-2" data-translate-key="passwordPlaceholder" placeholder="كلمة المرور" required>
+          <button id="loginBtnAuth" class="btn btn-ios mb-2" data-translate-key="loginBtn">تسجيل الدخول</button>
+          <button id="gotoSignupBtn" class="btn btn-ios-outline mb-2" data-translate-key="createAccountBtn">إنشاء حساب</button>
+          <p id="authErrorMsg" class="text-danger mt-2"></p>
+        </div>
+      </div>
+    </div>
+    <div id="signupSection" class="text-center hidden">
+      <div class="card">
+        <div class="card-body">
+          <h3 data-translate-key="signupTitle">إنشاء حساب جديد</h3>
+          <p class="text-muted" data-translate-key="signupSubtitle">أدخل اسم المستخدم، الإيميل، وكلمة المرور.</p>
+          <input type="text" id="usernameInput" class="form-control mb-2" data-translate-key="usernamePlaceholder" placeholder="اسم المستخدم" required>
+          <input type="email" id="signupEmailInput" class="form-control mb-2" data-translate-key="emailPlaceholder" placeholder="البريد الإلكتروني" required>
+          <input type="password" id="signupPasswordInput" class="form-control mb-2" data-translate-key="passwordPlaceholder" placeholder="كلمة المرور" required>
+          <button id="signupBtn" class="btn btn-ios mb-2" data-translate-key="createAccountBtn">إنشاء الحساب</button>
+          <button id="backToLoginBtn" class="btn btn-ios-outline mb-2" data-translate-key="backToLoginBtn">عودة لتسجيل الدخول</button>
+          <p id="signupErrorMsg" class="text-danger mt-2"></p>
+        </div>
+      </div>
+    </div>
+    <div id="appSection" class="hidden">
+      <div id="homeSection" class="card">
+        <div class="card-header bg-primary text-white" data-translate-key="addWorkerHeader">إضافة عامل جديد</div>
+        <div class="card-body">
+          <form id="addWorkerForm">
+            <div class="mb-3">
+              <label for="workerNameInput" class="form-label" data-translate-key="workerNameLabel">اسم العامل</label>
+              <input type="text" class="form-control" id="workerNameInput" data-translate-key="workerNamePlaceholder" placeholder="أدخل اسم العامل" required>
+            </div>
+            <button type="submit" class="btn btn-ios"><i class="fas fa-user-plus"></i> <span data-translate-key="addWorkerBtn">إضافة عامل</span></button>
+          </form>
+        </div>
+      </div>
+      <div id="workersListSection" class="card hidden">
+        <div class="card-header bg-info text-white" data-translate-key="workerListHeader">قائمة العمال</div>
+        <div class="card-body">
+          <input type="text" id="searchInput" data-translate-key="searchPlaceholder" placeholder="ابحث عن عامل..." class="form-control mb-3" />
+          <ul id="workersList" class="list-group"></ul>
+        </div>
+      </div>
+      <div id="editWorkerSection" class="card hidden">
+        <div class="card-header bg-warning text-white d-flex justify-content-between align-items-center">
+          <h4 data-translate-key="editWorkerHeader">تعديل ملف العامل</h4>
+          <button id="backFromEditWorkerBtn" class="btn btn-ios-outline btn-sm">
+            <i class="fas fa-arrow-right"></i> <span data-translate-key="backBtn">العودة</span>
+          </button>
+        </div>
+        <div class="card-body">
+          <form id="editWorkerForm">
+            <input type="hidden" id="editWorkerId" value="">
+            <div class="mb-3">
+              <label for="editWorkerName" class="form-label" data-translate-key="workerNameLabel">اسم العامل</label>
+              <input type="text" class="form-control" id="editWorkerName" required>
+            </div>
+            <div class="mb-3">
+              <label for="editWorkerPhone" class="form-label" data-translate-key="phoneLabel">رقم الهاتف</label>
+              <input type="text" class="form-control" id="editWorkerPhone">
+            </div>
+            <div class="mb-3">
+              <label for="editWorkerProfession" class="form-label" data-translate-key="professionLabel">المهنة</label>
+              <input type="text" class="form-control" id="editWorkerProfession">
+            </div>
+            <div class="mb-3">
+              <label for="editWorkerGmail" class="form-label" data-translate-key="gmailLabel">البريد الإلكتروني</label>
+              <input type="email" class="form-control" id="editWorkerGmail">
+            </div>
+            <div class="mb-3">
+              <label for="editWorkerAddress" class="form-label" data-translate-key="addressLabel">العنوان</label>
+              <textarea class="form-control" id="editWorkerAddress" rows="2"></textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label" data-translate-key="fingerprintLabel">البصمة</label>
+              <div id="fingerprintStatus" data-translate-key="fingerprintStatusNotRegistered">غير مسجلة</div>
+              <button type="button" class="btn btn-secondary mt-2" id="registerFingerprintBtn" data-translate-key="registerFingerprintBtn">تسجيل بصمة العامل</button>
+            </div>
+            <button type="submit" class="btn btn-record w-100" data-translate-key="saveChangesBtn">حفظ التعديلات</button>
+          </form>
+        </div>
+      </div>
+      <div id="workerDetailSection" class="card hidden">
+        <div class="card-header bg-success text-white d-flex justify-content-between align-items-center flex-wrap">
+          <h4 id="workerDetailName" class="mb-0"></h4>
+          <div class="btn-group">
+            <button id="editWorkerBtn" class="btn btn-ios-outline btn-sm" onclick="window.editWorker(currentWorkerId)">
+              <i class="fas fa-edit"></i> <span data-translate-key="editFileBtn">تعديل الملف</span>
+            </button>
+            <button id="detailedReportBtn" class="btn btn-report btn-sm"><i class="fas fa-file-alt"></i> <span data-translate-key="detailedReportBtn">تقرير مفصل</span></button>
+            <button id="printWorkerBtn" class="btn btn-print btn-sm"><i class="fas fa-print"></i> <span data-translate-key="printBtn">طباعة</span></button>
+            <button id="addRecordBtn" class="btn btn-new btn-sm"><i class="fas fa-plus"></i> <span data-translate-key="newRecordBtn">سجل جديد</span></button>
+          </div>
+        </div>
+        <div class="card-body">
+          <ul class="nav nav-tabs" id="detailTab" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="records-tab" data-bs-toggle="tab" data-bs-target="#recordsTab" type="button" role="tab" data-translate-key="recordsTab">سجلات الحضور</button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="stats-tab" data-bs-toggle="tab" data-bs-target="#statsTab" type="button" role="tab" data-translate-key="statsTab">الإحصائيات</button>
+            </li>
+          </ul>
+          <div class="tab-content mt-3">
+            <div class="tab-pane fade show active" id="recordsTab" role="tabpanel">
+              <div class="table-responsive">
+                <table class="table table-bordered" id="recordsTable">
+                  <thead class="table-light">
+                    <tr>
+                      <th style="min-width:100px;" data-translate-key="recordsTableHeaderDate">التاريخ</th>
+                      <th style="min-width:90px;" data-translate-key="recordsTableHeaderType">نوع السجل</th>
+                      <th style="min-width:90px;" data-translate-key="recordsTableHeaderArrival">وقت الحضور</th>
+                      <th style="min-width:90px;" data-translate-key="recordsTableHeaderDeparture">وقت الانصراف</th>
+                      <th style="min-width:90px;" data-translate-key="recordsTableHeaderOvertime">الساعات الإضافية</th>
+                      <th style="min-width:90px;" data-translate-key="recordsTableHeaderLocation">الموقع</th>
+                      <th style="min-width:100px;" data-translate-key="recordsTableHeaderActions">الإجراءات</th>
+                    </tr>
+                  </thead>
+                  <tbody id="recordsTableBody"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="tab-pane fade" id="statsTab" role="tabpanel">
+              <div id="statisticsContainer"></div>
+            </div>
+          </div>
+        </div>
+        <div class="card-footer">
+          <button id="backToWorkersList" class="btn btn-ios-outline"><i class="fas fa-arrow-right"></i> <span data-translate-key="backToWorkerListBtn">العودة لقائمة العمال</span></button>
+        </div>
+      </div>
+      <div id="recordSection" class="card hidden">
+        <div class="mb-3">
+          <button id="backFromRecordBtn" class="btn btn-ios-outline"><i class="fas fa-arrow-right"></i> <span data-translate-key="backBtn">العودة</span></button>
+        </div>
+        <div class="card-body">
+          <h3 id="recordFormTitle" class="mb-3" data-translate-key="addRecordTitle">إضافة سجل حضور</h3>
+          <form id="recordForm">
+            <input type="hidden" id="recordId" value="">
+            <div class="mb-3">
+              <label for="recordDate" class="form-label" data-translate-key="recordDateLabel">التاريخ</label>
+              <input type="date" class="form-control" id="recordDate" required>
+            </div>
+            <div class="mb-3">
+              <label for="recordType" class="form-label" data-translate-key="recordTypeLabel">نوع السجل</label>
+              <select class="form-select" id="recordType" required>
+                <option value="حضور" data-translate-key="recordTypeAttendance">حضور</option>
+                <option value="غياب" data-translate-key="recordTypeAbsence">غياب</option>
+              </select>
+            </div>
+            <div id="timeFields">
+              <div class="mb-3">
+                <label for="arrivalTime" class="form-label" data-translate-key="arrivalTimeLabel">وقت الحضور</label>
+                <input type="time" class="form-control" id="arrivalTime">
+              </div>
+              <div class="mb-3">
+                <label for="departureTime" class="form-label" data-translate-key="departureTimeLabel">وقت الانصراف</label>
+                <input type="time" class="form-control" id="departureTime">
+              </div>
+            </div>
+            <div class="mb-3">
+              <label for="overtime" class="form-label" data-translate-key="overtimeLabel">الساعات الإضافية</label>
+              <input type="number" step="0.1" min="0" class="form-control" id="overtime" placeholder="0">
+            </div>
+            <button type="submit" class="btn btn-record w-100" data-translate-key="saveRecordBtn">حفظ السجل</button>
+          </form>
+        </div>
+      </div>
+      <div id="dashboardSection" class="card hidden">
+        <div class="card-header bg-secondary text-white" data-translate-key="navDashboard">لوحة المعلومات</div>
+        <div class="card-body">
+          <canvas id="attendanceChart" style="max-width:100%;"></canvas>
+        </div>
+      </div>
+      <div id="activityLogSection" class="card hidden">
+        <div class="card-header bg-warning text-dark" data-translate-key="navActivity">سجل النشاط</div>
+        <div class="card-body">
+          <ul id="activityLogList" class="list-group"></ul>
+        </div>
+      </div>
+      <div id="shiftScheduleSection" class="card hidden">
+        <div class="card-header bg-info text-white" data-translate-key="navShifts">جدول المناوبات</div>
+        <div class="card-body">
+          <form id="shiftForm" class="mb-3">
+            <div class="row g-2">
+              <div class="col-md-3">
+                <input type="date" id="shiftDate" class="form-control" required>
+              </div>
+              <div class="col-md-3">
+                <select id="shiftWorkerSelect" class="form-select" required>
+                  <option value="" data-translate-key="selectWorkerOption">اختر العامل</option>
+                </select>
+              </div>
+              <div class="col-md-2">
+                <input type="time" id="shiftStart" class="form-control" required>
+              </div>
+              <div class="col-md-2">
+                <input type="time" id="shiftEnd" class="form-control" required>
+              </div>
+              <div class="col-md-2">
+                <button type="submit" class="btn btn-ios w-100" data-translate-key="addShiftBtn">إضافة مناوبة</button>
+              </div>
+            </div>
+          </form>
+          <div class="table-responsive">
+            <table class="table table-bordered" id="shiftsTable">
+              <thead class="table-light">
+                <tr>
+                  <th data-translate-key="shiftTableHeaderDate">التاريخ</th>
+                  <th data-translate-key="shiftTableHeaderWorker">العامل</th>
+                  <th data-translate-key="shiftTableHeaderStart">بداية المناوبة</th>
+                  <th data-translate-key="shiftTableHeaderEnd">نهاية المناوبة</th>
+                </tr>
+              </thead>
+              <tbody id="shiftsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <div id="fingerprintAttendanceSection" class="card hidden">
+        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+          <h4 data-translate-key="navFingerprintAttendance">تسجيل الحضور بالبصمة</h4>
+          <button id="backFromFingerprintAttendance" class="btn btn-ios-outline btn-sm">
+            <i class="fas fa-arrow-right"></i> <span data-translate-key="backBtn">العودة</span>
+          </button>
+        </div>
+        <div class="card-body text-center">
+          <p data-translate-key="fingerprintAttendanceInstruction">ضع إصبعك على الجهاز لتسجيل الحضور</p>
+          <button id="btnFingerprintAttendance" class="btn btn-outline-primary" data-translate-key="navFingerprintAttendance">تسجيل الحضور بالبصمة</button>
+        </div>
+      </div>
+      <div id="settingsSection" class="card hidden">
+        <div class="card-header bg-dark text-white" data-translate-key="userSettingsHeader">إعدادات المستخدم</div>
+        <div class="card-body">
+          <form id="settingsForm">
+            <div class="mb-3">
+              <label class="form-label" data-translate-key="currentModeLabel">الوضع الحالي</label>
+              <select class="form-select" id="themeSelect">
+                <option value="light" data-translate-key="lightMode">فاتح</option>
+                <option value="dark" data-translate-key="darkMode">داكن</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-ios w-100" data-translate-key="saveSettingsBtn">حفظ الإعدادات</button>
+          </form>
+        </div>
+      </div>
+      <div id="detailedReportSection" class="card hidden">
+        <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+          <h4 data-translate-key="detailedReportHeader">تقرير مفصل</h4>
+          <button id="backFromDetailedReportBtn" class="btn btn-ios-outline btn-sm">
+            <i class="fas fa-arrow-right"></i> <span data-translate-key="backBtn">العودة</span>
+          </button>
+        </div>
+        <div class="card-body" id="detailedReportContent"></div>
+      </div>
+      <div id="helpSection" class="card hidden">
+        <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+          <h4 data-translate-key="navHelp">مساعدة وإرشادات</h4>
+          <button id="backFromHelpBtn" class="btn btn-ios-outline btn-sm">
+            <i class="fas fa-arrow-right"></i> <span data-translate-key="backBtn">العودة</span>
+          </button>
+        </div>
+        <div class="card-body">
+          <h6 data-translate-key="helpInstructionsTitle">كيفية استخدام النظام:</h6>
+          <ul>
+            <li data-translate-key="helpLi1">تسجيل الدخول باستخدام البريد الإلكتروني وكلمة المرور.</li>
+            <li data-translate-key="helpLi2">إضافة العمال وتسجيل حضورهم وغيابهم.</li>
+            <li data-translate-key="helpLi3">عرض تقرير مفصل لكل عامل عبر زر "تقرير مفصل".</li>
+            <li data-translate-key="helpLi4">متابعة سجل النشاط لمعرفة أحدث الإجراءات.</li>
+            <li data-translate-key="helpLi5">تنظيم جدول المناوبات من خلال قسم "جدول المناوبات".</li>
+            <li data-translate-key="helpLi6">تسجيل الحضور بالبصمة في حالة دعم الجهاز لهذه الخاصية.</li>
+          </ul>
+          <h6 data-translate-key="helpFAQTitle">الأسئلة الشائعة:</h6>
+          <p data-translate-key="helpFAQContent">إذا واجهت أي مشكلة، يرجى التواصل مع الدعم الفني.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <!-- تحميل مكتبات JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  
+  <!-- تحميل مكتبات Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+  <!-- تحميل ملف السكريبت الرئيسي الخاص بنا -->
+  <script src="script.js"></script>
+  
+  <!-- كود تسجيل عامل الخدمة (Service Worker) المدمج -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      const serviceWorkerCode = `
+        const CACHE_NAME = 'worker-attendance-cache-v3';
+        const urlsToCache = [
+          '.',
+          'index.html',
+          'style.css',
+          'script.js',
+          'manifest.json',
+          'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css',
+          'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
+          'https://cdn.jsdelivr.net/npm/chart.js',
+          'https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js',
+          'https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js',
+          'https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js',
+          'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js',
+          'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js',
+          'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgPprCWU972pY69r6BK7dsaLAwRPSi_0AfSeFHQVwK8zZNj3mJmGEi6uNARys9D7ygnVEye2OQU2wFA75aWnGJwusrzxFJ-CyVMqUvXchNQxGodf5MviBMOSaRovigoIGasMo8dC_CFEquxZVOVfozliKWgO2Z2GQdK0w09vH9HMjbN17bmZ7iVf5MzbcqW/s192/1000163283.jpg'
+        ];
+        self.addEventListener('install', event => {
+          event.waitUntil(
+            caches.open(CACHE_NAME).then(cache => {
+              console.log('Opened cache and caching basic assets');
+              return cache.addAll(urlsToCache);
+            })
+          );
+        });
+        self.addEventListener('activate', event => {
+          event.waitUntil(
+            caches.keys().then(cacheNames => {
+              return Promise.all(
+                cacheNames.filter(cacheName => {
+                  return cacheName.startsWith('worker-attendance-cache-') && cacheName !== CACHE_NAME;
+                }).map(cacheName => {
+                  return caches.delete(cacheName);
+                })
+              );
+            })
+          );
+        });
+        self.addEventListener('fetch', event => {
+          event.respondWith(
+            caches.match(event.request).then(response => {
+              return response || fetch(event.request);
+            })
+          );
+        });
+      `;
+      window.addEventListener('load', () => {
+        const serviceWorkerBlob = new Blob([serviceWorkerCode], { type: 'application/javascript' });
+        const serviceWorkerUrl = URL.createObjectURL(serviceWorkerBlob);
+        navigator.serviceWorker.register(serviceWorkerUrl)
+          .then(reg => console.log('Inline Service Worker registered successfully:', reg))
+          .catch(err => console.error('Inline Service Worker registration failed:', err));
+      });
+    }
+  </script>
+</body>
+</html>
