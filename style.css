@@ -1,0 +1,48 @@
+/* أنماط iOS العامة */
+body {
+  background-color: #f2f2f7;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  transition: background-color 0.3s, color 0.3s;
+}
+.hidden { display: none; }
+.pointer { cursor: pointer; }
+.card {
+  margin-bottom: 20px;
+  border-radius: 12px;
+  background-color: #fff;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+  border: none;
+  padding: 20px;
+}
+.navbar {
+  background: rgba(255,255,255,0.95);
+  backdrop-filter: blur(20px);
+  box-shadow: 0 1px 5px rgba(0,0,0,0.1);
+  position: relative;
+  z-index: 1030;
+}
+.navbar-brand { font-weight: bold; color: #007aff !important; }
+.navbar-toggler { border: none; }
+.navbar-nav .nav-link { font-size: 1.1rem; margin: 0 10px; color: #007aff !important; }
+.btn-ios { background: #007aff; color: white; border: none; border-radius: 22px; padding: 10px 20px; font-size: 1rem; transition: background 0.3s; }
+.btn-ios:hover { background: #005ecb; }
+.btn-ios-outline { background: transparent; color: #007aff; border: 1px solid #007aff; border-radius: 22px; padding: 5px 15px; font-size: 0.9rem; transition: background 0.3s, color 0.3s; }
+.btn-ios-outline:hover { background: #007aff; color: white; }
+.btn-record { background: #28a745; color: white; border: none; border-radius: 22px; padding: 10px 20px; font-size: 1rem; transition: background 0.3s; }
+.btn-record:hover { background: #218838; }
+.btn-print { background: #e91e63; color: white; border: none; border-radius: 22px; padding: 10px 20px; font-size: 0.9rem; transition: background 0.3s; }
+.btn-print:hover { background: #c2185b; }
+.btn-report { background: #3f51b5; color: white; border: none; border-radius: 22px; padding: 10px 20px; font-size: 0.9rem; transition: background 0.3s; }
+.btn-report:hover { background: #303f9f; }
+.btn-new { background: #ff9800; color: white; border: none; border-radius: 22px; padding: 10px 20px; font-size: 0.9rem; transition: background 0.3s; }
+.btn-new:hover { background: #fb8c00; }
+.list-group-item { border: none; background: #fff; border-radius: 10px; margin-bottom: 8px; padding: 15px; font-size: 1.1rem; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+#searchInput { border-radius: 22px; padding: 10px 15px; border: 1px solid #ccc; margin-bottom: 15px; width: 100%; }
+#workerDetailSection .card-header { padding: 15px 20px; }
+#workerDetailSection .card-header h4 { font-size: 1.5rem; margin: 0; }
+#workerDetailSection .card-header > div { display: flex; gap: 10px; flex-wrap: wrap; }
+#recordsTable { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+#recordsTable th, #recordsTable td { border: 1px solid #dee2e6; padding: 12px; text-align: center; }
+#recordsTable th { background-color: #f8f9fa; font-weight: bold; min-width: 90px; }
+#recordsTable tbody tr:hover { background-color: #f1f1f1; }
+@media (max-width: 768px) { #recordsTable th, #recordsTable td { padding: 8px; } }
