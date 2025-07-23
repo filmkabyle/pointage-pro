@@ -1,0 +1,21 @@
+{
+  "name": "نظام حضور العمال السحابي",
+  "short_name": "حضور العمال",
+  "description": "نظام سحابي لإدارة وتسجيل حضور وغياب العمال.",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f2f2f7",
+  "theme_color": "#007aff",
+  "icons": [
+    {
+      "src": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgPprCWU972pY69r6BK7dsaLAwRPSi_0AfSeFHQVwK8zZNj3mJmGEi6uNARys9D7ygnVEye2OQU2wFA75aWnGJwusrzxFJ-CyVMqUvXchNQxGodf5MviBMOSaRovigoIGasMo8dC_CFEquxZVOVfozliKWgO2Z2GQdK0w09vH9HMjbN17bmZ7iVf5MzbcqW/s192/1000163283.jpg",
+      "sizes": "192x192",
+      "type": "image/jpeg"
+    },
+    {
+      "src": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgPprCWU972pY69r6BK7dsaLAwRPSi_0AfSeFHQVwK8zZNj3mJmGEi6uNARys9D7ygnVEye2OQU2wFA75aWnGJwusrzxFJ-CyVMqUvXchNQxGodf5MviBMOSaRovigoIGasMo8dC_CFEquxZVOVfozliKWgO2Z2GQdK0w09vH9HMjbN17bmZ7iVf5MzbcqW/s512/1000163283.jpg",
+      "sizes": "512x512",
+      "type": "image/jpeg"
+    }
+  ]
+}
