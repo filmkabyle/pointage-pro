@@ -23,13 +23,12 @@ let notifications = [];
 // منطق الترجمة واللغات
 // =================================================================
 const translations = {
-  pageTitle: { ar: "نظام حضور العمال السحابي", en: "Cloud Worker Attendance System", fr: "Système de Présence des Travailleurs Cloud" },
+  pageTitle: { ar: "نظام حضور العمال السحابي", en: "Cloud Worker Attendance System", fr: "Présence des Travailleurs" },
   brandTitle: { ar: "نظام حضور العمال", en: "Worker Attendance", fr: "Présence des Travailleurs" },
   language: { ar: "اللغة", en: "Language", fr: "Langue" },
   logoutBtn: { ar: "تسجيل الخروج", en: "Logout", fr: "Déconnexion" },
   loginTitle: { ar: "تسجيل الدخول", en: "Login", fr: "Connexion" },
   signupTitle: { ar: "إنشاء حساب جديد", en: "Create New Account", fr: "Créer un Nouveau Compte" },
-  // يمكنك إضافة المزيد من مفاتيح الترجمة هنا حسب الحاجة
 };
 function setLanguage(lang) {
   document.documentElement.lang = lang;
@@ -38,13 +37,23 @@ function setLanguage(lang) {
   document.querySelectorAll('[data-translate-key]').forEach(element => {
     const key = element.getAttribute('data-translate-key');
     if (translations[key] && translations[key][lang]) {
-        element.textContent = translations[key][lang];
+        // التحقق مما إذا كان العنصر يحتوي على أيقونة للحفاظ عليها
+        const icon = element.querySelector('i.fas');
+        const text = translations[key][lang];
+        element.innerHTML = icon ? `${icon.outerHTML} ${text}` : text;
     }
   });
 }
 function initializeLanguage() {
-    const savedLang = localStorage.getItem('selectedLanguage') || 'ar';
-    setLanguage(savedLang);
+    const savedLang = localStorage.getItem('selectedLanguage');
+    const browserLang = navigator.language.split('-')[0];
+    if (savedLang && ['ar', 'en', 'fr'].includes(savedLang)) {
+        setLanguage(savedLang);
+    } else if (['en', 'fr'].includes(browserLang)) {
+        setLanguage(browserLang);
+    } else {
+        setLanguage('ar');
+    }
 }
 
 // =================================================================
@@ -79,26 +88,34 @@ function updateNotificationUI() {
 }
 
 // =================================================================
-// إدارة المصادقة (Authentication)
+// إدارة المصادقة (Authentication) -- هذا هو الجزء الذي تم إصلاحه
 // =================================================================
 auth.onAuthStateChanged(user => {
-    const loginUI = document.getElementById('loginSection').parentElement;
     if (user) {
-        loginUI.classList.add('hidden');
+        // المستخدم مسجل دخوله: إخفاء نماذج الدخول وإظهار التطبيق
+        document.getElementById('loginSection').classList.add('hidden');
+        document.getElementById('signupSection').classList.add('hidden');
         document.getElementById('appSection').classList.remove('hidden');
+        
+        // تحديث شريط التنقل
         document.getElementById('logoutBtn').classList.remove('hidden');
         document.getElementById('userEmail').textContent = user.email;
+        
+        // عرض القسم الافتراضي داخل التطبيق
         showSection('homeSection');
         loadWorkers();
     } else {
-        loginUI.classList.remove('hidden');
-        document.getElementById('signupSection').classList.add('hidden');
+        // المستخدم غير مسجل دخوله: إظهار نموذج الدخول وإخفاء التطبيق
         document.getElementById('loginSection').classList.remove('hidden');
+        document.getElementById('signupSection').classList.add('hidden');
         document.getElementById('appSection').classList.add('hidden');
+        
+        // تحديث شريط التنقل
         document.getElementById('logoutBtn').classList.add('hidden');
         document.getElementById('userEmail').textContent = '';
     }
 });
+
 
 // =================================================================
 // إدارة العمال (إضافة، عرض، تعديل، حذف)
@@ -160,7 +177,6 @@ function openRecordForm(recordId = null) {
     document.getElementById('recordId').value = recordId;
     document.getElementById('recordDate').valueAsDate = new Date();
     showSection('recordSection');
-    // يمكنك إضافة منطق تحميل بيانات السجل للتعديل هنا إذا أردت
 }
 async function loadWorkerRecords(workerId) {
     const snapshot = await db.collection("workers").doc(workerId).collection("records").orderBy("date", "desc").get();
@@ -299,7 +315,6 @@ async function registerFingerprint() {
     }
 }
 
-
 // =================================================================
 // ربط الأحداث (Event Listeners) عند تحميل الصفحة
 // =================================================================
@@ -308,6 +323,13 @@ document.addEventListener('DOMContentLoaded', () => {
     updateNotificationUI();
 
     // المصادقة
+    const emailInput = document.getElementById('emailInput');
+    const passwordInput = document.getElementById('passwordInput');
+    const authErrorMsg = document.getElementById('authErrorMsg');
+    const signupEmailInput = document.getElementById('signupEmailInput');
+    const signupPasswordInput = document.getElementById('signupPasswordInput');
+    const signupErrorMsg = document.getElementById('signupErrorMsg');
+
     document.getElementById('loginBtnAuth').addEventListener('click', () => auth.signInWithEmailAndPassword(emailInput.value, passwordInput.value).catch(err => authErrorMsg.textContent = err.message));
     document.getElementById('signupBtn').addEventListener('click', () => auth.createUserWithEmailAndPassword(signupEmailInput.value, signupPasswordInput.value).catch(err => signupErrorMsg.textContent = err.message));
     document.getElementById('logoutBtn').addEventListener('click', () => auth.signOut());
@@ -323,6 +345,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('addWorkerForm').addEventListener('submit', e => {
         e.preventDefault();
         const name = document.getElementById('workerNameInput').value;
+        if (!name) return;
         db.collection('workers').add({ name, createdBy: auth.currentUser.uid, hourlyRate: 10, overtimeRate: 1.5, workHoursPerDay: 8 })
         .then(() => { addNotification(`تمت إضافة العامل ${name}.`); loadWorkers(); e.target.reset(); });
     });
@@ -346,6 +369,8 @@ document.addEventListener('DOMContentLoaded', () => {
             departure: document.getElementById('departureTime').value,
             location: null
         };
+        if (!record.date) return alert('الرجاء تحديد التاريخ.');
+
         if (record.type === 'حضور' && record.arrival) {
             try { record.location = await getCurrentLocation(); addNotification("تم تسجيل الموقع."); } 
             catch (error) { addNotification(error.message, true); }
